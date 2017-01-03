@@ -1,0 +1,6 @@
+extends layout
+
+block content
+    p Currently tracking #{stats.channels_total} channels.
+    p #{stats.relations} swords have been given to #{stats.users} moderators.
+    p The average channel has #{(stats.relations / stats.channels_total).toFixed(1)} and the average moderator has #{(stats.relations / stats.users).toFixed(1)} swords.

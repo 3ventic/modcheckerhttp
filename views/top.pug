@@ -1,0 +1,15 @@
+extends layout
+
+block content
+    h2#modcount Top 500 swords
+    p The moderators with the most swords on Twitch.
+    table#dt_modcount
+    h2#views Top 500 views
+    p The moderators whose moderated channels total the most views.
+    table#dt_views
+    h2#followers Top 500 followers
+    p The moderators whose moderated channels total the most followers.
+    table#dt_followers
+    script(src="https://code.jquery.com/jquery-3.1.1.min.js")
+    script(src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js")
+    script(src=(process.env.PATH + "/top.js"))

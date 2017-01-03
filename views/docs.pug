@@ -1,0 +1,69 @@
+extends layout
+
+block content
+    h2 Introduction
+    p
+        = 'The API is free to use, though I ask you provide a custom user-agent with a URL to your application or a page describing it, if used outside client-side javascript. The base URL is '
+        code https://twitchstuff.3v.fi/modlookup/api/
+        = '. Keep in mind the channel mod lists are only updated once a day. Only documented endpoints can be used without prior contact.'
+    h2 Contents
+    ul
+        li: a(href='#limits') Limits
+        li: a(href='#errors') Errors
+        li: a.code(href='#get-user') GET /user/:user
+        li: a.code(href='#get-top') GET /top
+        li: a.code(href='#get-stats') GET /stats
+    h2#limits Limits
+    ul
+        li= "No concurrent requests. Wait for your previous request to finish before starting a new one."
+        li= "Don't request the same resource more than once every 30 minutes, if you can cache the response in your application. This is the smallest server-side cache duration so you won't get any new data requesting faster than this."
+    p
+        = 'If your application needs to exceed these limits, please '
+        a(href="mailto:contact@3v.fi") contact me.
+    h2#errors Errors
+    table
+        thead
+            tr
+                th Status
+                th Description
+        tbody
+            tr
+                td 400 Bad Request
+                td The request was malformed and could not be completed. See the returned json.error for details.
+            tr
+                td 403 Forbidden
+                td You have been blocked.
+            tr
+                td 500 Internal Server Error
+                td The request could not be completed due to a server error. Try again later.
+            tr
+                td 502 Bad Gateway
+                td The backend is currently unreachable. Try again later.
+            tr
+                td 504 Gateway Time-out
+                td The backend could not be reached in time. Try again later.
+    h2.code#get-user GET /user/:user
+    h3 Query Parameters
+    table
+        thead
+            tr
+                th Name
+                th Values
+                th Default Value
+        tbody
+            tr
+                td offset
+                td int >= 0
+                td 0
+            tr
+                td limit
+                td 1-500
+                td 100
+    h3 Example
+    pre: code.block= '{\n  "status": 200,\n  "user": "totallynotventic",\n  "count": 2,\n  "channels": [\n    {\n      "name": "3v",\n      "followers": 1044,\n      "views": 4264,\n      "partnered": false\n    },\n    {\n      "name": "ohbot",\n      "followers": 134,\n      "views": 2217,\n      "partnered": false\n    }\n  ]\n}'
+    h2.code#get-top GET /top
+    h3 Example
+    pre: code.block= '{\n  "status: 200,\n  "top": {\n    "modcount": [\n      {\n        "name": "3v",\n        "modcount": 1337,\n        "views": 420,\n        "followers": 69\n      },\n      ...\n    ],\n    "views": [ ... ]\n    "followers": [ ... ]\n  }\n}'
+    h2.code#get-stats GET /stats
+    h3 Example
+    pre: code.block= '{\n  "status: 200,\n  "stats": {\n    "relations": 10812918,\n    "channels_total": 4056799,\n    "users": 4386605,\n    "channels_no_mods": 331,\n    "channels_only_broadcaster": 39564\n  }\n}'

@@ -11,16 +11,17 @@ html
         nav
             ul
                 li
-                    a(href="/" class=(currentPath == '/' ? 'active' : '')) Home
+                    a(href=(process.env.PATH + "/") class=(currentPath == '/' ? 'active' : '')) Home
                 li
-                    a(href="/top" class=(currentPath == '/top' ? 'active' : '')) Top
+                    a(href=(process.env.PATH + "/top") class=(currentPath == '/top' ? 'active' : '')) Top
                 li
-                    a(href="/stats" class=(currentPath == '/stats' ? 'active' : '')) Stats
+                    a(href=(process.env.PATH + "/stats") class=(currentPath == '/stats' ? 'active' : '')) Stats
                 li
-                    a(href="/docs" class=(currentPath == '/docs' ? 'active' : '')) API Docs
+                    a(href=(process.env.PATH + "/docs") class=(currentPath == '/docs' ? 'active' : '')) API Docs
     .content
         block content
     .footer
+        p= 'Not associated with Twitch Interactive Inc. Information from this tool must not be used to harass, break any laws or in other abusive ways.'
         a(href="https://3v.fi/") 3v.fi
         = ' - '
         a(href="https://twitchstuff.3v.fi/") Other Twitchstuff

@@ -9,6 +9,14 @@ function tryParseInt(str, def) {
     return isNaN(num) ? def : num;
 }
 
+exports.stats = function (req, res, stats) {
+    res.status(200).json({ status: 200, stats: stats });
+}
+
+exports.top = function (req, res, toplists) {
+    res.status(200).json({ status: 200, top: toplists });
+}
+
 exports.user = function (req, res) {
     dbPool.getConnection(function (err, db) {
         if (err) {
