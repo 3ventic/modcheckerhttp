@@ -1,7 +1,7 @@
 var dbPool = require('../mysql.js').dbPool;
 
 exports.index = function (req, res) {
-    res.render('index', { title: 'Home', currentPath: req.path });
+    res.render('index', { title: 'Lookup', currentPath: req.path });
 }
 
 exports.lookup = function (req, res) {
