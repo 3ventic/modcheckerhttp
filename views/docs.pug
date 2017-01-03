@@ -4,7 +4,7 @@ block content
     h2 Introduction
     p
         = 'The API is free to use, though I ask you provide a custom user-agent with a URL to your application or a page describing it, if used outside client-side javascript. The base URL is '
-        code https://twitchstuff.3v.fi/modlookup/api/
+        code #{process.env.BASEDOMAIN}#{process.env.PATH}/api/
         = '. Keep in mind the channel mod lists are only updated once a day. Only documented endpoints can be used without prior contact.'
     h2 Contents
     ul
