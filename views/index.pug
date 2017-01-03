@@ -1,0 +1,10 @@
+extends layout
+
+block content
+    - var scriptsrc = process.env.PATH + '/lookup.js'
+    .lookup
+        p= 'Hi there. This tool is provided for the benefit of the Twitch community at large. The tool returns all channels the user has a sword in out of the pool of millions of channels the tool tracks on a daily basis.'
+        .lookup-input
+            input#user(type="text" regexp="^\w+$")
+            button#lookup= 'Lookup!'
+    script(src=scriptsrc)

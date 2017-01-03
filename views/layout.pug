@@ -1,0 +1,26 @@
+- var t = title + " - 3v.fi Mod Lookup"
+- var stylesrc = process.env.PATH + "/style.css"
+doctype html
+html
+  head
+    title= t
+    link(href=stylesrc, rel="stylesheet")
+    meta(description="The largest directory of Twitch moderators. Find out where you're modded!")
+  body
+    .header
+        nav
+            ul
+                li
+                    a(href="/" class=(currentPath == '/' ? 'active' : '')) Home
+                li
+                    a(href="/top" class=(currentPath == '/top' ? 'active' : '')) Top
+                li
+                    a(href="/stats" class=(currentPath == '/stats' ? 'active' : '')) Stats
+                li
+                    a(href="/docs" class=(currentPath == '/docs' ? 'active' : '')) API Docs
+    .content
+        block content
+    .footer
+        a(href="https://3v.fi/") 3v.fi
+        = ' - '
+        a(href="https://twitchstuff.3v.fi/") Other Twitchstuff

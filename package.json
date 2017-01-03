@@ -1,0 +1,20 @@
+{
+  "name": "modcheckerhttp",
+  "version": "1.0.0",
+  "description": "mod lookup API and website",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@vpn.3v.fi:root/modcheckerhttp.git"
+  },
+  "author": "3v",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.14.0",
+    "mysql": "^2.12.0",
+    "pug": "^2.0.0-beta6"
+  }
+}
