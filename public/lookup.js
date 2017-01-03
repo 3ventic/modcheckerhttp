@@ -19,7 +19,10 @@ $(document).ready(function () {
     function getMods(offset) {
         $.getJSON('../api/user/' + user + '?limit=500&offset=' + offset, function (json) {
             offset += 500;
-            dt.rows.add(json.channels);
+            dt.rows.add(json.channels.map(function (val) {
+                val.partnered = val.partnered ? '\u2705' : '';
+                val.name = '<a href="u/' + val.name + '">' + val.name + '</a>';
+            }));
             if (json.count > offset) {
                 $('#status').text('Loading... ' + offset + '/' + json.count);
                 getMods(offset);
