@@ -18,6 +18,7 @@ exports.top = function (req, res, toplists) {
 }
 
 exports.user = function (req, res) {
+    var user = req.params.user.toLowerCase();
     dbPool.getConnection(function (err, db) {
         if (err) {
             console.error("Lookup db con", err);
@@ -31,7 +32,7 @@ exports.user = function (req, res) {
             } else if (limit < 1 || limit > 500) {
                 res.status(400).json({ status: 400, error: "limit must be between 1 and 500" });
             } else {
-                db.query('SELECT channels.*, mods.* FROM channels LEFT JOIN mods ON channels.channel = mods.channel WHERE mods.username = ? LIMIT ? OFFSET ?', [req.params.user, limit, offset], function (err, rows) {
+                db.query('SELECT channels.*, mods.* FROM channels LEFT JOIN mods ON channels.channel = mods.channel WHERE mods.username = ? LIMIT ? OFFSET ?', [user, limit, offset], function (err, rows) {
                     if (err) {
                         console.error("Lookup query", err);
                         retErr(res);
@@ -40,7 +41,7 @@ exports.user = function (req, res) {
                         retErr(res);
                         db.release();
                     } else {
-                        db.query('SELECT COUNT(1) AS count FROM channels LEFT JOIN mods ON channels.channel = mods.channel WHERE mods.username = ?', [req.params.user], function (err, row) {
+                        db.query('SELECT COUNT(1) AS count FROM channels LEFT JOIN mods ON channels.channel = mods.channel WHERE mods.username = ?', [user], function (err, row) {
                             if (err) {
                                 console.error("Lookup query", err);
                                 retErr(res);
@@ -58,7 +59,7 @@ exports.user = function (req, res) {
                                         partnered: !!rows[i].partnered
                                     });
                                 }
-                                res.status(200).json({ status: 200, user: req.params.user, count: row[0].count, channels: ret }); 
+                                res.status(200).json({ status: 200, user: user, count: row[0].count, channels: ret }); 
                             }
                         });
                     }
