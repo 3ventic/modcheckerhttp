@@ -1,3 +1,8 @@
+function numfrmt(num) {
+        // Format number for printing
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+}
+
 $(document).ready(function () {
     var tops = ['modcount', 'views', 'followers'];
 
@@ -5,6 +10,9 @@ $(document).ready(function () {
         for (var i = 0; i < tops.length; i += 1) {
             var data = json.top[tops[i]].map(function (val) {
                 val.name = '<a href="u/' + val.name + '">' + val.name + '</a>';
+				val.modcount = '<span class="hidden">' + ('000000000000' + val.modcount).slice(-12) + '</span>' + numfrmt(val.modcount);
+				val.followers = '<span class="hidden">' + ('00000000000000' + val.followers).slice(-14) + '</span>' + numfrmt(val.followers);
+				val.views = '<span class="hidden">' + ('00000000000000' + val.views).slice(-14) + '</span>' + numfrmt(val.views);
                 return val;
             });
             $('#dt_' + tops[i]).DataTable({
