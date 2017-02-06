@@ -34,3 +34,4 @@ table a { text-decoration: none; }
 .dataTables_paginate a, .dataTables_paginate .ellipsis { margin-left: 0.5em; }
 .dataTables_paginate a { cursor: pointer; }
 .hidden { display: none; }
+.promo { margin-top: 2em; }
