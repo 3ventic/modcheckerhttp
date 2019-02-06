@@ -4,6 +4,7 @@ var site = require("./routes/site.js");
 var api = require("./routes/api.js");
 var dbPool = require("./mysql.js").dbPool;
 var HotShots = require("hot-shots");
+var onHeaders = require("on-headers");
 
 var statsd = null;
 if (process.env.STATSD_HOST) {
