@@ -2,6 +2,19 @@ extends layout
 
 block content
     h2= title
+    div#totals
+        div
+            strong= "Views total"
+            = ": "
+            span#totalviews= "..."
+        div
+            strong= "Follow total"
+            = ": "
+            span#totalfollows= "..."
+        div
+            strong= "Partners"
+            = ": "
+            span#totalpartners= "..."
     p#status
     div.dtbar.dttop
     table#dt
