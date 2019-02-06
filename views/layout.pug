@@ -1,5 +1,5 @@
 - var t = title + " - 3v.fi Mod Lookup"
-- var stylesrc = process.env.PATH + "/style.css"
+- var stylesrc = (process.env.BASEPATH || "") + "/style.css"
 doctype html
 html
   head
@@ -12,13 +12,13 @@ html
         nav
             ul
                 li
-                    a(href=(process.env.PATH + "/") class=(currentPath == '/' ? 'active' : '')) Lookup
+                    a(href=((process.env.BASEPATH || "") + "/") class=(currentPath == '/' ? 'active' : '')) Lookup
                 li
-                    a(href=(process.env.PATH + "/top") class=(currentPath == '/top' ? 'active' : '')) Top
+                    a(href=((process.env.BASEPATH || "") + "/top") class=(currentPath == '/top' ? 'active' : '')) Top
                 li
-                    a(href=(process.env.PATH + "/stats") class=(currentPath == '/stats' ? 'active' : '')) Stats
+                    a(href=((process.env.BASEPATH || "") + "/stats") class=(currentPath == '/stats' ? 'active' : '')) Stats
                 li
-                    a(href=(process.env.PATH + "/docs") class=(currentPath == '/docs' ? 'active' : '')) API Docs
+                    a(href=((process.env.BASEPATH || "") + "/docs") class=(currentPath == '/docs' ? 'active' : '')) API Docs
     .content
         block content
     .footer

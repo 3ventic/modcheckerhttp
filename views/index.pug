@@ -7,4 +7,4 @@ block content
             input#user(type="text" regexp="^\w+$")
             button#lookup= 'Lookup!'
     script(src="https://code.jquery.com/jquery-3.1.1.min.js")
-    script(src=(process.env.PATH + '/index.js'))
+    script(src=((process.env.BASEPATH || "") + '/index.js'))

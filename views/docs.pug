@@ -4,7 +4,7 @@ block content
     h2 Introduction
     p
         = 'The API is free to use, though I ask you provide a custom user-agent with a URL to your application or a page describing it, if used outside client-side javascript. The base URL is '
-        code #{process.env.BASEDOMAIN}#{process.env.PATH}/api/
+        code #{process.env.BASEDOMAIN}#{(process.env.BASEPATH || "")}/api/
         = '. Keep in mind the channel mod lists are only updated once a day. Only documented endpoints can be used without prior contact.'
     h2 Contents
     ul
@@ -42,7 +42,7 @@ block content
             tr
                 td 504 Gateway Time-out
                 td The backend could not be reached in time. Try again later.
-    h2.code#get-user GET /user/:user
+    h2.code#get-user GET /user-v2/:user
     h3 Query Parameters
     table
         thead
@@ -52,18 +52,18 @@ block content
                 th Default Value
         tbody
             tr
-                td offset
-                td int >= 0
-                td 0
+                td cursor
+                td opaque string
+                td= "<empty string>"
             tr
                 td limit
-                td 1-500
+                td 1-1000
                 td 100
     h3 Example
-    pre: code.block= '{\n  "status": 200,\n  "user": "totallynotventic",\n  "count": 2,\n  "channels": [\n    {\n      "name": "3v",\n      "followers": 1044,\n      "views": 4264,\n      "partnered": false\n    },\n    {\n      "name": "ohbot",\n      "followers": 134,\n      "views": 2217,\n      "partnered": false\n    }\n  ]\n}'
+    pre: code.block= '{\n  "status": 200,\n  "user": "totallynotventic",\n  "count": 2,\n  "channels": [\n    {\n      "name": "3v",\n      "followers": 1044,\n      "views": 4264,\n      "partnered": false\n    },\n    {\n      "name": "ohbot",\n      "followers": 134,\n      "views": 2217,\n      "partnered": false\n    }\n  ],\n  "cursor": ""\n}'
     h2.code#get-top GET /top
     h3 Example
-    pre: code.block= '{\n  "status: 200,\n  "top": {\n    "modcount": [\n      {\n        "name": "3v",\n        "modcount": 1337,\n        "views": 420,\n        "followers": 69\n      },\n      ...\n    ],\n    "views": [ ... ]\n    "followers": [ ... ]\n  }\n}'
+    pre: code.block= '{\n  "status": 200,\n  "top": {\n    "modcount": [\n      {\n        "name": "3v",\n        "modcount": 1337,\n        "views": 420,\n        "followers": 69\n      },\n      ...\n    ],\n    "views": [ ... ]\n    "followers": [ ... ]\n  }\n}'
     h2.code#get-stats GET /stats
     h3 Example
-    pre: code.block= '{\n  "status: 200,\n  "stats": {\n    "relations": 10812918,\n    "channels_total": 4056799,\n    "users": 4386605,\n    "channels_no_mods": 331,\n    "channels_only_broadcaster": 39564\n  }\n}'
+    pre: code.block= '{\n  "status": 200,\n  "stats": {\n    "relations": 10812918,\n    "channels_total": 4056799,\n    "users": 4386605,\n    "channels_no_mods": 331\n  }\n}'

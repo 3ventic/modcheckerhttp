@@ -12,4 +12,4 @@ block content
     table#dt_followers
     script(src="https://code.jquery.com/jquery-3.1.1.min.js")
     script(src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js")
-    script(src=(process.env.PATH + "/top.js"))
+    script(src=((process.env.BASEPATH || "") + "/top.js"))
