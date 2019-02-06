@@ -9,10 +9,10 @@ var onHeaders = require("on-headers");
 var statsd = null;
 if (process.env.STATSD_HOST) {
 	statsd = new HotShots({
-		port: process.env.STATSD_PORT | 8125,
+		port: process.env.STATSD_PORT || 8125,
 		host: process.env.STATSD_HOST,
 		prefix: "modlookup.",
-		protocol: process.env.STATSD_PROTOCOL | "udp",
+		protocol: process.env.STATSD_PROTOCOL || "udp",
 		errorHandler: function(err) {
 			console.error("statsd", err);
 		}
@@ -38,7 +38,9 @@ if (statsd) {
 	app.use(function(req, res, next) {
 		var start = Date.now();
 		onHeaders(res, function() {
-			if (res.statusCode === 200) {
+			var time = Date.now() - start;
+			console.log("response " + res.statusCode + " sent in " + time + " ms for " + req.path);
+			if (res.statusCode !== 404) {
 				let statspath;
 				switch (req.path) {
 					case "":
@@ -50,7 +52,7 @@ if (statsd) {
 						break;
 				}
 				statsd.increment("counter.http.response." + statspath);
-				statsd.timing("timing.http.response." + statspath, Date.now() - start);
+				statsd.timing("timing.http.response." + statspath, time);
 			}
 		});
 		next();
