@@ -86,7 +86,7 @@ exports.user = function(req, res) {
 								[user],
 								function(err, row) {
 									if (err) {
-										console.error("Lookup query", err);
+										console.error("Lookup count query", err);
 										retErr(res);
 										db.release();
 									} else if (!rows) {
@@ -119,11 +119,61 @@ exports.user = function(req, res) {
 	});
 };
 
+exports.usertotals = function(req, res) {
+	var user = req.params.user.toLowerCase();
+	dbPool.getConnection(function(err, db) {
+		if (err) {
+			console.error("Total db con", err);
+			retErr(res);
+		} else {
+			db.query(
+				"SELECT SUM(channels.views) AS views, SUM(channels.followers) AS followers, COUNT(1) AS total FROM channels LEFT JOIN mods ON channels.channel = mods.channel WHERE mods.username = ?",
+				[user],
+				function(err, row) {
+					if (err) {
+						console.error("Total query", err);
+						retErr(res);
+						db.release();
+					} else if (!row) {
+						retErr(res);
+						db.release();
+					} else {
+						let result = {
+							status: 200,
+							user: user,
+							views: row[0].views,
+							follows: row[0].followers,
+							total: row[0].total
+						};
+						db.query(
+							"SELECT COUNT(1) AS partnered FROM channels LEFT JOIN mods ON channels.channel = mods.channel WHERE mods.username = ? AND partnered = 1",
+							[user],
+							function(err, row) {
+								if (err) {
+									console.error("Total count query", err);
+									retErr(res);
+									db.release();
+								} else if (!row) {
+									retErr(res);
+									db.release();
+								} else {
+									result.partners = row[0].partnered;
+									res.status(200).json(result);
+								}
+							}
+						);
+					}
+				}
+			);
+		}
+	});
+};
+
 exports.userv2 = function(req, res) {
 	var user = req.params.user.toLowerCase();
 	dbPool.getConnection(function(err, db) {
 		if (err) {
-			console.error("Lookup db con", err);
+			console.error("Lookup v2 db con", err);
 			retErr(res);
 		} else {
 			let cursor = req.query.cursor || "";
@@ -140,7 +190,7 @@ exports.userv2 = function(req, res) {
 					[user, cursor, limit],
 					function(err, rows) {
 						if (err) {
-							console.error("Lookup query", err);
+							console.error("Lookup v2 query", err);
 							retErr(res);
 							db.release();
 						} else if (!rows) {
@@ -152,7 +202,7 @@ exports.userv2 = function(req, res) {
 								[user],
 								function(err, row) {
 									if (err) {
-										console.error("Lookup query", err);
+										console.error("Lookup v2 count query", err);
 										retErr(res);
 										db.release();
 									} else if (!rows) {
@@ -180,6 +230,59 @@ exports.userv2 = function(req, res) {
 									}
 								}
 							);
+						}
+					}
+				);
+			}
+		}
+	});
+};
+
+exports.userv3 = function(req, res) {
+	var user = req.params.user.toLowerCase();
+	dbPool.getConnection(function(err, db) {
+		if (err) {
+			console.error("Lookup v3 db con", err);
+			retErr(res);
+		} else {
+			let cursor = req.query.cursor || "";
+			if (cursor.length > 0) {
+				cursor = decodeB64(cursor);
+			}
+			let limit = tryParseInt(req.query.limit || 100, 100);
+			console.log("Lookup v3 for " + req.params.user + " using cursor " + cursor + " and limit " + limit);
+			if (limit < 1 || limit > 50000) {
+				res.status(400).json({ status: 400, error: "limit must be between 1 and 500" });
+			} else {
+				db.query(
+					"SELECT channels.*, mods.* FROM channels LEFT JOIN mods ON channels.channel = mods.channel WHERE mods.username = ? AND mods.channel > ? LIMIT ?",
+					[user, cursor, limit],
+					function(err, rows) {
+						if (err) {
+							console.error("Lookup v3 query", err);
+							retErr(res);
+							db.release();
+						} else if (!rows) {
+							retErr(res);
+							db.release();
+						} else {
+							let ret = [];
+							let retCursor = "";
+							for (let i = 0; i < rows.length; i += 1) {
+								ret.push({
+									name: rows[i].channel,
+									followers: rows[i].followers,
+									views: rows[i].views,
+									partnered: !!rows[i].partnered
+								});
+								retCursor = rows[i].channel;
+							}
+							res.status(200).json({
+								status: 200,
+								user: user,
+								channels: ret,
+								cursor: encodeB64(retCursor)
+							});
 						}
 					}
 				);

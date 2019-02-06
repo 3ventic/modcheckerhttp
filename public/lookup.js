@@ -21,9 +21,10 @@ $(document).ready(function() {
 			searchPlaceholder: "search"
 		}
 	});
+	var total = "...";
 	function getMods(cursor, loaded) {
-		var limit = 1000;
-		$.getJSON("../api/user-v2/" + user + "?limit=" + limit + "&cursor=" + cursor, function(json) {
+		var limit = 50000;
+		$.getJSON("../api/user-v3/" + user + "?limit=" + limit + "&cursor=" + cursor, function(json) {
 			dt.rows.add(
 				json.channels.map(function(val) {
 					val.partnered = val.partnered ? "\u2705" : "";
@@ -43,7 +44,7 @@ $(document).ready(function() {
 			);
 			loaded += json.channels.length;
 			if (json.cursor !== "") {
-				$("#status").text("Loading... " + loaded + "/" + json.count);
+				$("#status").text("Loading... " + loaded + "/" + total);
 				getMods(json.cursor, loaded);
 			} else {
 				$("#status").text("");
@@ -53,4 +54,11 @@ $(document).ready(function() {
 	}
 	$("#status").text("Loading...");
 	getMods("", 0);
+
+	$.getJSON("../api/user-totals/" + user, function(json) {
+		$("#totalviews").text(numfrmt(json.views));
+		$("#totalfollows").text(numfrmt(json.follows));
+		$("#totalpartners").text(numfrmt(json.partners));
+		total = json.total;
+	});
 });

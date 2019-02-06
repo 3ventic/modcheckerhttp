@@ -10,7 +10,8 @@ block content
     ul
         li: a(href='#limits') Limits
         li: a(href='#errors') Errors
-        li: a.code(href='#get-user') GET /user/:user
+        li: a.code(href='#get-user') GET /user-v3/:user
+        li: a.code(href='#get-totals') GET /user-totals/:user
         li: a.code(href='#get-top') GET /top
         li: a.code(href='#get-stats') GET /stats
     h2#limits Limits
@@ -42,7 +43,7 @@ block content
             tr
                 td 504 Gateway Time-out
                 td The backend could not be reached in time. Try again later.
-    h2.code#get-user GET /user-v2/:user
+    h2.code#get-user GET /user-v3/:user
     h3 Query Parameters
     table
         thead
@@ -57,10 +58,13 @@ block content
                 td= "<empty string>"
             tr
                 td limit
-                td 1-1000
+                td 1-10000
                 td 100
     h3 Example
-    pre: code.block= '{\n  "status": 200,\n  "user": "totallynotventic",\n  "count": 2,\n  "channels": [\n    {\n      "name": "3v",\n      "followers": 1044,\n      "views": 4264,\n      "partnered": false\n    },\n    {\n      "name": "ohbot",\n      "followers": 134,\n      "views": 2217,\n      "partnered": false\n    }\n  ],\n  "cursor": ""\n}'
+    pre: code.block= '{\n  "status": 200,\n  "user": "totallynotventic",\n  "channels": [\n    {\n      "name": "3v",\n      "followers": 1044,\n      "views": 4264,\n      "partnered": false\n    },\n    {\n      "name": "ohbot",\n      "followers": 134,\n      "views": 2217,\n      "partnered": false\n    }\n  ],\n  "cursor": ""\n}'
+    h2.code#get-totals GET /user-totals/:user
+    h3 Example
+    pre: code.block= '{\n  "status": 200,\n  "user": "3v",\n  "views": 2952102171,\n  "follows": 16154368,\n  "total": 74,\n  "partners": 19\n}'
     h2.code#get-top GET /top
     h3 Example
     pre: code.block= '{\n  "status": 200,\n  "top": {\n    "modcount": [\n      {\n        "name": "3v",\n        "modcount": 1337,\n        "views": 420,\n        "followers": 69\n      },\n      ...\n    ],\n    "views": [ ... ]\n    "followers": [ ... ]\n  }\n}'
