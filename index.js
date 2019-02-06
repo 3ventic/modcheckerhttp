@@ -48,11 +48,21 @@ if (statsd) {
 						statspath = "index";
 						break;
 					default:
-						statspath = req.path.substring(1).replace("/", ".");
+						parts = req.path.substring(1).split("/");
+						switch (parts[0]) {
+							case "u":
+								statspath = "u.total";
+								break;
+							case "api":
+								statspath = "api." + parts[1] + ".total";
+								break;
+							default:
+								statspath = parts[0] + ".total";
+						}
 						break;
 				}
-				statsd.increment("counter.http.response." + statspath);
-				statsd.timing("timing.http.response." + statspath, time);
+				statsd.increment("counter.response." + statspath);
+				statsd.timing("timing.response." + statspath, time);
 			}
 		});
 		next();
