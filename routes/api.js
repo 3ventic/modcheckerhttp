@@ -44,6 +44,17 @@ function decodeB64(str) {
 	).toString("utf8");
 }
 
+function queryAsync(query, vars) {
+	return new Promise((resolve, _) => {
+		db.query(query, vars, function(err, rows) {
+			if (err) {
+				throw err;
+			}
+			resolve(rows);
+		});
+	});
+}
+
 exports.stats = function(req, res, stats) {
 	res.status(200).json({ status: 200, stats: stats });
 };
@@ -106,45 +117,6 @@ exports.user = function(req, res) {
 	}
 };
 
-exports.usertotals = function(req, res) {
-	var user = req.params.user.toLowerCase();
-	db.query(
-		"SELECT SUM(channels.views) AS views, SUM(channels.followers) AS followers, COUNT(1) AS total FROM channels LEFT JOIN mods ON channels.channel = mods.channel WHERE mods.username = ?",
-		[user],
-		function(err, row) {
-			if (err) {
-				console.error("Total query", err);
-				retErr(res);
-			} else if (!row) {
-				retErr(res);
-			} else {
-				let result = {
-					status: 200,
-					user: user,
-					views: row[0].views,
-					follows: row[0].followers,
-					total: row[0].total
-				};
-				db.query(
-					"SELECT COUNT(1) AS partnered FROM channels LEFT JOIN mods ON channels.channel = mods.channel WHERE mods.username = ? AND partnered = 1",
-					[user],
-					function(err, row) {
-						if (err) {
-							console.error("Total count query", err);
-							retErr(res);
-						} else if (!row) {
-							retErr(res);
-						} else {
-							result.partners = row[0].partnered;
-							res.status(200).json(result);
-						}
-					}
-				);
-			}
-		}
-	);
-};
-
 exports.userv2 = function(req, res) {
 	var user = req.params.user.toLowerCase();
 	let cursor = req.query.cursor || "";
@@ -203,7 +175,7 @@ exports.userv2 = function(req, res) {
 	}
 };
 
-exports.userv3 = function(req, res) {
+exports.userv3 = async function(req, res) {
 	var user = req.params.user.toLowerCase();
 	let cursor = req.query.cursor || "";
 	if (cursor.length > 0) {
@@ -214,35 +186,57 @@ exports.userv3 = function(req, res) {
 	if (limit < 1 || limit > 50000) {
 		res.status(400).json({ status: 400, error: "limit must be between 1 and 500" });
 	} else {
-		db.query(
-			"SELECT channels.*, mods.* FROM channels LEFT JOIN mods ON channels.channel = mods.channel WHERE mods.username = ? AND mods.channel > ? LIMIT ?",
-			[user, cursor, limit],
-			function(err, rows) {
-				if (err) {
-					console.error("Lookup v3 query", err);
-					retErr(res);
-				} else if (!rows) {
-					retErr(res);
-				} else {
-					let ret = [];
-					let retCursor = "";
-					for (let i = 0; i < rows.length; i += 1) {
-						ret.push({
-							name: rows[i].channel,
-							followers: rows[i].followers,
-							views: rows[i].views,
-							partnered: !!rows[i].partnered
-						});
-						retCursor = rows[i].channel;
-					}
-					res.status(200).json({
-						status: 200,
-						user: user,
-						channels: ret,
-						cursor: encodeB64(retCursor)
-					});
-				}
+		try {
+			let rows = await queryAsync(
+				"SELECT channels.*, mods.* FROM channels LEFT JOIN mods ON channels.channel = mods.channel WHERE mods.username = ? AND mods.channel > ? LIMIT ?",
+				[user, cursor, limit]
+			);
+			let ret = [];
+			let retCursor = "";
+			for (let i = 0; i < rows.length; i += 1) {
+				ret.push({
+					name: rows[i].channel,
+					followers: rows[i].followers,
+					views: rows[i].views,
+					partnered: !!rows[i].partnered
+				});
+				retCursor = rows[i].channel;
 			}
+			res.status(200).json({
+				status: 200,
+				user: user,
+				channels: ret,
+				cursor: encodeB64(retCursor)
+			});
+		} catch (e) {
+			console.error("userv3", e);
+			retErr(res);
+		}
+	}
+};
+
+exports.usertotals = async function(req, res) {
+	var user = req.params.user.toLowerCase();
+	try {
+		let sumsTask = queryAsync(
+			"SELECT SUM(channels.views) AS views, SUM(channels.followers) AS followers, COUNT(1) AS total FROM channels LEFT JOIN mods ON channels.channel = mods.channel WHERE mods.username = ?",
+			[user]
 		);
+		let partnersTask = queryAsync(
+			"SELECT COUNT(1) AS partnered FROM channels LEFT JOIN mods ON channels.channel = mods.channel WHERE mods.username = ? AND partnered = 1",
+			[user]
+		);
+		let results = await Promise.all([sumsTask, partnersTask]);
+		res.status(200).json({
+			status: 200,
+			user: user,
+			views: results[0][0].views,
+			follows: results[0][0].followers,
+			total: results[0][0].total,
+			partners: results[1][0].partnered
+		});
+	} catch (e) {
+		console.error("usertotals", e);
+		retErr(res);
 	}
 };
