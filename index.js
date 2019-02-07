@@ -2,7 +2,7 @@ var express = require("express");
 var app = express();
 var site = require("./routes/site.js");
 var api = require("./routes/api.js");
-var dbPool = require("./mysql.js").dbPool;
+var db = require("./mysql.js").dbPool;
 var HotShots = require("hot-shots");
 var onHeaders = require("on-headers");
 
@@ -104,27 +104,20 @@ function queryTopList(db, list) {
 
 function updateTopLists() {
 	console.log("Updating top 500s and stats");
-	dbPool.getConnection(function(err, db) {
-		if (err) {
-			console.error("Top lists", err);
-		} else {
-			queryTopList(db, "modcount");
-			queryTopList(db, "views");
-			queryTopList(db, "followers");
-			db.query(
-				"SELECT (SELECT COUNT(1) FROM mods) AS relations, (SELECT COUNT(1) FROM channels) AS channels_total, (SELECT COUNT(1) FROM users) AS users, (SELECT COUNT(1) FROM channels WHERE channel NOT IN (SELECT DISTINCT channel FROM mods)) AS channels_no_mods",
-				function(err, rows) {
-					if (err) {
-						console.error("Stats", err);
-					} else if (rows) {
-						stats = rows[0];
-						console.log("Got stats", rows[0]);
-					}
-				}
-			);
-			db.release();
+	queryTopList(db, "modcount");
+	queryTopList(db, "views");
+	queryTopList(db, "followers");
+	db.query(
+		"SELECT (SELECT COUNT(1) FROM mods) AS relations, (SELECT COUNT(1) FROM channels) AS channels_total, (SELECT COUNT(1) FROM users) AS users, (SELECT COUNT(1) FROM channels WHERE channel NOT IN (SELECT DISTINCT channel FROM mods)) AS channels_no_mods",
+		function(err, rows) {
+			if (err) {
+				console.error("Stats", err);
+			} else if (rows) {
+				stats = rows[0];
+				console.log("Got stats", rows[0]);
+			}
 		}
-	});
+	);
 }
 setInterval(updateTopLists, 3600000);
 updateTopLists();
