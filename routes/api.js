@@ -218,22 +218,17 @@ exports.userv3 = async function(req, res) {
 exports.usertotals = async function(req, res) {
 	var user = req.params.user.toLowerCase();
 	try {
-		let sumsTask = queryAsync(
-			"SELECT SUM(channels.views) AS views, SUM(channels.followers) AS followers, COUNT(1) AS total FROM channels LEFT JOIN mods ON channels.channel = mods.channel WHERE mods.username = ?",
+		let totals = await queryAsync(
+			"SELECT views, followers, swords AS total, partners FROM users WHERE username = ?",
 			[user]
 		);
-		let partnersTask = queryAsync(
-			"SELECT COUNT(1) AS partnered FROM channels LEFT JOIN mods ON channels.channel = mods.channel WHERE mods.username = ? AND partnered = 1",
-			[user]
-		);
-		let results = await Promise.all([sumsTask, partnersTask]);
 		res.status(200).json({
 			status: 200,
 			user: user,
-			views: results[0][0].views,
-			follows: results[0][0].followers,
-			total: results[0][0].total,
-			partners: results[1][0].partnered
+			views: totals[0].views,
+			follows: totals[0].followers,
+			total: totals[0].total,
+			partners: totals[0].partners
 		});
 	} catch (e) {
 		console.error("usertotals", e);
