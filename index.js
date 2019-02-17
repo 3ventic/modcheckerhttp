@@ -77,7 +77,6 @@ app.get("/u/:user", site.lookup);
 
 app.get("/api/user/:user", api.user);
 app.get("/api/user-totals/:user", api.usertotals);
-app.get("/api/user-v2/:user", api.userv2);
 app.get("/api/user-v3/:user", api.userv3);
 app.get("/api/stats", (req, res) => api.stats(req, res, stats));
 app.get("/api/top", (req, res) => api.top(req, res, toplists));

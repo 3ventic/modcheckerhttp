@@ -117,64 +117,6 @@ exports.user = function(req, res) {
 	}
 };
 
-exports.userv2 = function(req, res) {
-	var user = req.params.user.toLowerCase();
-	let cursor = req.query.cursor || "";
-	if (cursor.length > 0) {
-		cursor = decodeB64(cursor);
-	}
-	let limit = tryParseInt(req.query.limit || 100, 100);
-	console.log("Lookup v2 for " + req.params.user + " using cursor " + cursor + " and limit " + limit);
-	if (limit < 1 || limit > 1000) {
-		res.status(400).json({ status: 400, error: "limit must be between 1 and 1000" });
-	} else {
-		db.query(
-			"SELECT channels.*, mods.* FROM channels LEFT JOIN mods ON channels.channel = mods.channel WHERE mods.username = ? AND mods.channel > ? LIMIT ?",
-			[user, cursor, limit],
-			function(err, rows) {
-				if (err) {
-					console.error("Lookup v2 query", err);
-					retErr(res);
-				} else if (!rows) {
-					retErr(res);
-				} else {
-					db.query(
-						"SELECT COUNT(1) AS count FROM channels LEFT JOIN mods ON channels.channel = mods.channel WHERE mods.username = ?",
-						[user],
-						function(err, row) {
-							if (err) {
-								console.error("Lookup v2 count query", err);
-								retErr(res);
-							} else if (!rows) {
-								retErr(res);
-							} else {
-								let ret = [];
-								let retCursor = "";
-								for (let i = 0; i < rows.length; i += 1) {
-									ret.push({
-										name: rows[i].channel,
-										followers: rows[i].followers,
-										views: rows[i].views,
-										partnered: !!rows[i].partnered
-									});
-									retCursor = rows[i].channel;
-								}
-								res.status(200).json({
-									status: 200,
-									user: user,
-									count: row[0].count,
-									channels: ret,
-									cursor: encodeB64(retCursor)
-								});
-							}
-						}
-					);
-				}
-			}
-		);
-	}
-};
-
 exports.userv3 = async function(req, res) {
 	var user = req.params.user.toLowerCase();
 	let cursor = req.query.cursor || "";
