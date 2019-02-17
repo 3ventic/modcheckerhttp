@@ -67,7 +67,7 @@ block content
     pre: code.block= '{\n  "status": 200,\n  "user": "3v",\n  "views": 2952102171,\n  "follows": 16154368,\n  "total": 74,\n  "partners": 19\n}'
     h2.code#get-top GET /top
     h3 Example
-    pre: code.block= '{\n  "status": 200,\n  "top": {\n    "modcount": [\n      {\n        "name": "3v",\n        "modcount": 1337,\n        "views": 420,\n        "followers": 69\n      },\n      ...\n    ],\n    "views": [ ... ]\n    "followers": [ ... ]\n  }\n}'
+    pre: code.block= '{\n  "status": 200,\n  "top": {\n    "modcount": [\n      {\n        "name": "3v",\n        "modcount": 1337,\n        "views": 420,\n        "followers": 69\n      },\n      ...\n    ],\n    "partners": [ ... ]\n    "views": [ ... ]\n    "followers": [ ... ]\n  }\n}'
     h2.code#get-stats GET /stats
     h3 Example
     pre: code.block= '{\n  "status": 200,\n  "stats": {\n    "relations": 10812918,\n    "channels_total": 4056799,\n    "users": 4386605,\n    "channels_no_mods": 331\n  }\n}'

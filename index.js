@@ -90,7 +90,9 @@ app.listen(process.env.PORT, function() {
 
 function queryTopList(db, list) {
 	db.query(
-		"SELECT username AS name, swords AS modcount, views, followers FROM users ORDER BY " + list + " DESC LIMIT 500",
+		"SELECT username AS name, swords AS modcount, partners, views, followers FROM users ORDER BY " +
+			list +
+			" DESC LIMIT 500",
 		function(err, rows) {
 			if (err) {
 				console.error("Top " + list, err);
@@ -105,6 +107,7 @@ function queryTopList(db, list) {
 function updateTopLists() {
 	console.log("Updating top 500s and stats");
 	queryTopList(db, "modcount");
+	queryTopList(db, "partners");
 	queryTopList(db, "views");
 	queryTopList(db, "followers");
 	db.query(
