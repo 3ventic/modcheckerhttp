@@ -183,8 +183,8 @@ exports.userv3 = async function(req, res) {
 	}
 	let limit = tryParseInt(req.query.limit || 100, 100);
 	console.log("Lookup v3 for " + req.params.user + " using cursor " + cursor + " and limit " + limit);
-	if (limit < 1 || limit > 50000) {
-		res.status(400).json({ status: 400, error: "limit must be between 1 and 50000" });
+	if (limit < 1 || limit > 10000) {
+		res.status(400).json({ status: 400, error: "limit must be between 1 and 10000" });
 	} else {
 		try {
 			let rows = await queryAsync(

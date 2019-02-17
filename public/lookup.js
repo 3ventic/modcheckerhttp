@@ -23,7 +23,7 @@ $(document).ready(function() {
 	});
 	var total = "...";
 	function getMods(cursor, loaded) {
-		var limit = 50000;
+		var limit = 2000;
 		$.getJSON("../api/user-v3/" + user + "?limit=" + limit + "&cursor=" + cursor, function(json) {
 			dt.rows.add(
 				json.channels.map(function(val) {
