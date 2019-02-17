@@ -225,14 +225,25 @@ exports.usertotals = async function(req, res) {
 			"SELECT views, followers, swords AS total, partners FROM users WHERE username = ?",
 			[user]
 		);
-		res.status(200).json({
-			status: 200,
-			user: user,
-			views: totals[0].views,
-			follows: totals[0].followers,
-			total: totals[0].total,
-			partners: totals[0].partners
-		});
+		if (totals.length === 0) {
+			res.status(200).json({
+				status: 200,
+				user: user,
+				views: 0,
+				follows: 0,
+				total: 0,
+				partners: 0
+			});
+		} else {
+			res.status(200).json({
+				status: 200,
+				user: user,
+				views: totals[0].views,
+				follows: totals[0].followers,
+				total: totals[0].total,
+				partners: totals[0].partners
+			});
+		}
 	} catch (e) {
 		console.error("usertotals", e);
 		retErr(res);
