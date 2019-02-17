@@ -200,7 +200,6 @@ exports.userv3 = async function(req, res) {
 					views: rows[i].views,
 					partnered: !!rows[i].partnered
 				});
-				retCursor = rows[i].channel;
 			}
 			if (ret.length > 0) {
 				ret = ret.slice(0, limit);
