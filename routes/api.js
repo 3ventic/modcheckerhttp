@@ -201,7 +201,7 @@ exports.userv3 = async function(req, res) {
 					partnered: !!rows[i].partnered
 				});
 			}
-			if (ret.length > 0) {
+			if (ret.length > limit) {
 				ret = ret.slice(0, limit);
 				retCursor = ret[ret.length - 1].name;
 			}
