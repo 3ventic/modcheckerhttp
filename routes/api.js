@@ -126,7 +126,7 @@ exports.userv2 = function(req, res) {
 	let limit = tryParseInt(req.query.limit || 100, 100);
 	console.log("Lookup v2 for " + req.params.user + " using cursor " + cursor + " and limit " + limit);
 	if (limit < 1 || limit > 1000) {
-		res.status(400).json({ status: 400, error: "limit must be between 1 and 500" });
+		res.status(400).json({ status: 400, error: "limit must be between 1 and 1000" });
 	} else {
 		db.query(
 			"SELECT channels.*, mods.* FROM channels LEFT JOIN mods ON channels.channel = mods.channel WHERE mods.username = ? AND mods.channel > ? LIMIT ?",
@@ -184,12 +184,12 @@ exports.userv3 = async function(req, res) {
 	let limit = tryParseInt(req.query.limit || 100, 100);
 	console.log("Lookup v3 for " + req.params.user + " using cursor " + cursor + " and limit " + limit);
 	if (limit < 1 || limit > 50000) {
-		res.status(400).json({ status: 400, error: "limit must be between 1 and 500" });
+		res.status(400).json({ status: 400, error: "limit must be between 1 and 50000" });
 	} else {
 		try {
 			let rows = await queryAsync(
 				"SELECT channels.*, mods.* FROM channels LEFT JOIN mods ON channels.channel = mods.channel WHERE mods.username = ? AND mods.channel > ? LIMIT ?",
-				[user, cursor, limit]
+				[user, cursor, limit + 1]
 			);
 			let ret = [];
 			let retCursor = "";
@@ -201,6 +201,10 @@ exports.userv3 = async function(req, res) {
 					partnered: !!rows[i].partnered
 				});
 				retCursor = rows[i].channel;
+			}
+			if (ret.length > 0) {
+				ret = ret.slice(0, limit);
+				retCursor = ret[ret.length - 1].name;
 			}
 			res.status(200).json({
 				status: 200,
