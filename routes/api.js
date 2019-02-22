@@ -64,57 +64,7 @@ exports.top = function(req, res, toplists) {
 };
 
 exports.user = function(req, res) {
-	var user = req.params.user.toLowerCase();
-	let offset = tryParseInt(req.query.offset || 0, 0);
-	let limit = tryParseInt(req.query.limit || 100, 100);
-	console.log("Lookup for " + req.params.user + " using offset " + offset + " and limit " + limit);
-	if (offset < 0) {
-		res.status(400).json({ status: 400, error: "offset must be positive or 0" });
-	} else if (limit < 1 || limit > 500) {
-		res.status(400).json({ status: 400, error: "limit must be between 1 and 500" });
-	} else {
-		db.query(
-			"SELECT channels.*, mods.* FROM channels LEFT JOIN mods ON channels.channel = mods.channel WHERE mods.username = ? LIMIT ? OFFSET ?",
-			[user, limit, offset],
-			function(err, rows) {
-				if (err) {
-					console.error("Lookup query", err);
-					retErr(res);
-				} else if (!rows) {
-					retErr(res);
-				} else {
-					db.query(
-						"SELECT COUNT(1) AS count FROM channels LEFT JOIN mods ON channels.channel = mods.channel WHERE mods.username = ?",
-						[user],
-						function(err, row) {
-							if (err) {
-								console.error("Lookup count query", err);
-								retErr(res);
-							} else if (!rows) {
-								retErr(res);
-							} else {
-								let ret = [];
-								for (let i = 0; i < rows.length; i += 1) {
-									ret.push({
-										name: rows[i].channel,
-										followers: rows[i].followers,
-										views: rows[i].views,
-										partnered: !!rows[i].partnered
-									});
-								}
-								res.status(200).json({
-									status: 200,
-									user: user,
-									count: row[0].count,
-									channels: ret
-								});
-							}
-						}
-					);
-				}
-			}
-		);
-	}
+	res.status(410).json({ status: 410, message: "This API has been removed. Please migrate to the new endpoints." });
 };
 
 exports.userv3 = async function(req, res) {
