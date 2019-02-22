@@ -4,9 +4,17 @@ function retErr(res) {
 	res.status(500).json({ status: 500, error: "Internal Server Error" });
 }
 
+function retBadUser(res, login) {
+	res.status(400).json({ status: 400, error: "Invalid user '" + login + "'" });
+}
+
 function tryParseInt(str, def) {
 	var num = parseInt(str, 10);
 	return isNaN(num) ? def : num;
+}
+
+function isValidLogin(login) {
+	return /^[0-9a-z_]+$/.test(login);
 }
 
 function encodeB64(str) {
@@ -69,6 +77,10 @@ exports.user = function(req, res) {
 
 exports.userv3 = async function(req, res) {
 	var user = req.params.user.toLowerCase();
+	if (!isValidLogin(user)) {
+		retBadUser(res, user);
+		return;
+	}
 	let cursor = req.query.cursor || "";
 	if (cursor.length > 0) {
 		cursor = decodeB64(cursor);
@@ -112,6 +124,10 @@ exports.userv3 = async function(req, res) {
 
 exports.usertotals = async function(req, res) {
 	var user = req.params.user.toLowerCase();
+	if (!isValidLogin) {
+		retBadUser(res, user);
+		return;
+	}
 	try {
 		let totals = await queryAsync(
 			"SELECT views, followers, swords AS total, partners FROM users WHERE username = ?",
